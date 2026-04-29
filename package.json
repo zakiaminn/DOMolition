@@ -1,0 +1,38 @@
+{
+  "name": "domolition",
+  "version": "1.0.0",
+  "description": "The Rage Quit UI Shatter Engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "keywords": [
+    "react",
+    "physics",
+    "matterjs",
+    "ui",
+    "animation"
+  ],
+  "author": "",
+  "license": "ISC",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.20.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "matter-js": "^0.20.0",
+    "puppeteer": "^24.42.0"
+  }
+}
