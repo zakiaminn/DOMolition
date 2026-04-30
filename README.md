@@ -65,7 +65,7 @@ Simulates brittle fracture. The UI cracks first (Pre-Fracture Phase), holding te
 
 ### 2. The Implode Engine (`effect="implode"`)
 A high-energy inward collapse. The UI is broken into a grid, and forces pull all pieces toward the center of mass before they drop.
-![implode engine demo](./assets/implodeeffectdemo.gif)
+![implode engine demo](./assets/implodeffectdemo.gif)
 **Usage:**
 ```tsx
 <RageQuitWrapper effect="implode" rows="{25}" // Horizontal grid subdivisions cols="{20}" Vertical>
