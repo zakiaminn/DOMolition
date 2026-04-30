@@ -1,8 +1,9 @@
 "use client";
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
-import html2canvas from 'html2canvas';
+import { toCanvas } from 'html-to-image';
+//import html2canvas from 'html2canvas';
 import { createShatterEngine, ShatterEngineInstance } from './physics';
-import { sanitizeColorsAndClone } from './utils';
+//import { sanitizeColorsAndClone } from './utils';
 
 // Props for the wrapper. rows/cols dictate how many shards the UI breaks into.
 export interface RageQuitWrapperProps {
@@ -52,9 +53,13 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
       const startExplosion = async () => {
         // 1. Capture Phase: Take a picture of the DOM. 
         // We have to use our custom sanitizer because html2canvas crashes on modern CSS colors (like oklch)
-        const sourceCanvas = await sanitizeColorsAndClone(contentEl, html2canvas, {
+        /*const sourceCanvas = await sanitizeColorsAndClone(contentEl, html2canvas, {
           backgroundColor: null,
           scale: window.devicePixelRatio || 1,
+        });*/
+        const sourceCanvas = await toCanvas(contentEl, {
+          backgroundColor: 'transparent',
+          pixelRatio: window.devicePixelRatio || 1,
         });
 
         // 2. The Swap: Hide the real UI but keep it in the DOM so layout doesn't collapse.
@@ -94,7 +99,12 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
         shatterEngine.start();
       };
 
-      startExplosion();
+      //startExplosion();
+      try {
+        startExplosion();
+      } catch (error) {
+        console.error("DOMolition Capture Failed:", error);
+      }
 
       return () => {
         // Cleanup just in case the component unmounts while the animation is running
