@@ -55,7 +55,7 @@ DOMolition supports multiple destruction engines, selected via the `effect` prop
 
 ### 1. The Glass Engine (`effect="glass"`)
 Simulates brittle fracture. The UI cracks first (Pre-Fracture Phase), holding tension for 250ms, before shattering into jagged, realistic glass shards using Voronoi tessellation and a deterministic jitter-grid for performance.
-(./assets/glasseffectdemo.gif)
+![glass engine demo](./assets/glasseffectdemo.gif)
 **Usage:**
 ```tsx
 <RageQuitWrapper effect="glass" shardCount="{200}" // Controls the number of jagged pieces>
@@ -65,7 +65,7 @@ Simulates brittle fracture. The UI cracks first (Pre-Fracture Phase), holding te
 
 ### 2. The Implode Engine (`effect="implode"`)
 A high-energy inward collapse. The UI is broken into a grid, and forces pull all pieces toward the center of mass before they drop.
-(./assets/implodeeffectdemo.gif)
+![implode engine demo](./assets/implodeeffectdemo.gif)
 **Usage:**
 ```tsx
 <RageQuitWrapper effect="implode" rows="{25}" // Horizontal grid subdivisions cols="{20}" Vertical>
@@ -75,7 +75,7 @@ A high-energy inward collapse. The UI is broken into a grid, and forces pull all
 
 ### 3. The Grid Engine (`effect="grid"`)
 The classic blocky explosion. The UI splits into a clean grid of rectangles that explode outward uniformly.
-!(./assets/grideffectdemo.gif)
+![grid engine demo](./assets/grideffectdemo.gif)
 **Usage:**
 ```tsx
 <RageQuitWrapper effect="grid" rows="{12}" cols="{10}">
