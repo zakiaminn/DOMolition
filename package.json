@@ -1,22 +1,39 @@
 {
   "name": "domolition",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The Rage Quit UI Shatter Engine",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "assets"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "postinstall": "node scripts/postinstall.js"
   },
   "keywords": [
     "react",
     "physics",
     "matterjs",
     "ui",
-    "animation"
+    "animation",
+    "rage-quit",
+    "shatter",
+    "html-to-image"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Zaki Amin Ahmad",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zakiaminn/domolition.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zakiaminn/domolition/issues"
+  },
+  "homepage": "https://github.com/zakiaminn/domolition#readme",
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
@@ -34,7 +51,6 @@
   "dependencies": {
     "d3-delaunay": "^6.0.4",
     "html-to-image": "^1.11.13",
-    "matter-js": "^0.20.0",
-    "puppeteer": "^24.42.0"
+    "matter-js": "^0.20.0"
   }
 }
