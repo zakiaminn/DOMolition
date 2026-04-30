@@ -1,6 +1,8 @@
-// This whole file exists mostly because `html2canvas` is severely outdated 
-// and will outright fail or render black boxes if it encounters modern CSS 
-// color spaces like `oklch` or `lab`. 
+/*
+
+This whole file exists mostly because `html2canvas` is severely outdated 
+and will outright fail or render black boxes if it encounters modern CSS 
+color spaces like `oklch` or `lab`. 
 
 export const sanitizeColorsAndClone = async (element: HTMLElement, html2canvas: any, options: any) => {
   // Bail out if we are SSRing
@@ -128,3 +130,4 @@ export const sanitizeColorsAndClone = async (element: HTMLElement, html2canvas: 
 
   return result;
 };
+*/
