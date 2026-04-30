@@ -75,7 +75,7 @@ A high-energy inward collapse. The UI is broken into a grid, and forces pull all
 
 ### 3. The Grid Engine (`effect="grid"`)
 The classic blocky explosion. The UI splits into a clean grid of rectangles that explode outward uniformly.
-(./assets/grideffectdemo.gif)
+!(./assets/grideffectdemo.gif)
 **Usage:**
 ```tsx
 <RageQuitWrapper effect="grid" rows="{12}" cols="{10}">
