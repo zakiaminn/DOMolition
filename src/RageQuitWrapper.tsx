@@ -1,14 +1,18 @@
 "use client";
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { toCanvas } from 'html-to-image';
+import { getEngine } from './engines';
+import type { ShatterEngineInstance } from './engines/glass';
 //import html2canvas from 'html2canvas';
-import { createShatterEngine, ShatterEngineInstance } from './physics';
+//import { createShatterEngine, ShatterEngineInstance } from './physics';
 //import { sanitizeColorsAndClone } from './utils';
 
 // Props for the wrapper. rows/cols dictate how many shards the UI breaks into.
 export interface RageQuitWrapperProps {
   children: React.ReactNode;
+  effect?: 'grid' | 'glass' | 'implode';
   isShattered?: boolean;
+  shardCount?: number;
   rows?: number;
   cols?: number;
   onShatterComplete?: () => void;
@@ -20,7 +24,7 @@ export interface RageQuitRef {
 }
 
 export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
-  ({ children, isShattered = false, rows = 10, cols = 8, onShatterComplete }, ref) => {
+  ({ children, effect = 'glass', isShattered = false, shardCount = 150, rows = 10, cols = 8, onShatterComplete }, ref) => {
     // We need a bunch of refs to manage the DOM nodes and canvas
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null); // The actual UI we are capturing
@@ -81,9 +85,11 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
         canvas.style.display = 'block';
 
         // 3. Physics Phase: Boot up Matter.js and tell it to start throwing the canvas shards around
-        const shatterEngine = createShatterEngine({
+        const engineFactory = getEngine(effect);
+        const shatterEngine = engineFactory({
           width,
           height,
+          shardCount,
           rows,
           cols,
           sourceCanvas,
