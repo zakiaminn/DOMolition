@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { toCanvas } from 'html-to-image';
 import { getEngine } from './engines';
+import { drawGlassCracks } from './engines/glass';
 import type { ShatterEngineInstance } from './engines/glass';
 //import html2canvas from 'html2canvas';
 //import { createShatterEngine, ShatterEngineInstance } from './physics';
@@ -61,10 +62,12 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
           backgroundColor: null,
           scale: window.devicePixelRatio || 1,
         });*/
-        const sourceCanvas = await toCanvas(contentEl, {
-          backgroundColor: 'transparent',
-          pixelRatio: window.devicePixelRatio || 1,
-        });
+        try {
+          // 1. Capture Phase: Take a picture of the DOM. 
+          const sourceCanvas = await toCanvas(contentEl, {
+            backgroundColor: 'transparent',
+            pixelRatio: window.devicePixelRatio || 1,
+          });
 
         // 2. The Swap: Hide the real UI but keep it in the DOM so layout doesn't collapse.
         // We set opacity to 0 and disable pointer events so the user can't click invisible buttons.
@@ -85,32 +88,49 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
         canvas.style.display = 'block';
 
         // 3. Physics Phase: Boot up Matter.js and tell it to start throwing the canvas shards around
-        const engineFactory = getEngine(effect);
-        const shatterEngine = engineFactory({
-          width,
-          height,
-          shardCount,
-          rows,
-          cols,
-          sourceCanvas,
-          ctx,
-          startX: rect.left,
-          startY: rect.top,
-          canvasWidth,
-          canvasHeight,
-          onComplete: onShatterComplete
+        const startPhysics = () => {
+          const engineFactory = getEngine(effect);
+          const shatterEngine = engineFactory({
+            width,
+            height,
+            shardCount,
+            rows,
+            cols,
+            sourceCanvas,
+            ctx,
+            startX: rect.left,
+            startY: rect.top,
+            canvasWidth,
+            canvasHeight,
+            onComplete: onShatterComplete
         });
         
         engineRef.current = shatterEngine;
-        shatterEngine.start();
+            shatterEngine.start();
+          };
+
+          // 4. Pre-Fracture Routing Logic
+          if (effect === 'glass') {
+            ctx.drawImage(sourceCanvas, rect.left, rect.top, width, height);
+            // Draw the cracks instantly
+            drawGlassCracks(ctx, width, height, shardCount, rect.left, rect.top);
+            
+            // Wait 250ms for the tension to build, then shatter
+            setTimeout(() => {
+              startPhysics();
+            }, 250);
+          } else {
+            // Grid and Implode don't have pre-fracture cracks, so they fire instantly
+            startPhysics();
+          }
+
+        } catch (error) {
+          console.error("DOMolition Capture Failed:", error);
+        }
       };
 
-      //startExplosion();
-      try {
-        startExplosion();
-      } catch (error) {
-        console.error("DOMolition Capture Failed:", error);
-      }
+      // Fire the explosion sequence
+      startExplosion();
 
       return () => {
         // Cleanup just in case the component unmounts while the animation is running
@@ -119,7 +139,7 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
           engineRef.current = null;
         }
       };
-    }, [shattered, rows, cols, onShatterComplete]);
+    }, [shattered, effect, shardCount, rows, cols, onShatterComplete]);
 
     return (
       <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
