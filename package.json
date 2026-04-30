@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "keywords": [
     "react",
