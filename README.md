@@ -1,5 +1,7 @@
 # DOMolition
 
+> *"Because sometimes the only valid response to centering a div is blowing up the entire UI."*
+
 DOMolition is a React-based physics engine wrapper that converts standard DOM elements into a rigid-body physics simulation. It is designed to provide an interactive "rage quit" UI mechanism by capturing the visual state of a component tree and shattering it dynamically on an HTML5 canvas.
 
 ## Architecture
