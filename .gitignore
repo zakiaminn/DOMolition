@@ -4,8 +4,12 @@ node_modules/
 # Compiled Library Output
 dist/
 
+#tests
+tests/
+
 # macOS System Files
 .DS_Store
+.thumbs.db
 
 # npm/Node Debug Logs
 npm-debug.log*
