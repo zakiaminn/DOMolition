@@ -1,0 +1,253 @@
+/* ============================================================
+   HOUSE BRAND KIT: "Sulfur on Chalk"  (ported from zakiportfolio)
+   Light is the default; dark is the override. Fonts are the
+   permanent trademark (Bricolage reads, Spline counts); the
+   chartreuse "Sulfur" is the house accent. Every token below is
+   the same one the portfolio ships, so this demo lives in the brand.
+   ============================================================ */
+:root {
+  color-scheme: light;
+  --bg: #FAFAF9;   --surface: #F1F1EE;   --surface-2: #E9E9E5;
+  --ink: #16160E;  --ink-2: #565448;     --ink-3: #78766A;
+  --rule: #E5E5E1; --rule-2: #D4D4CF;
+  --brand: #DCEC3A; --brand-ink: #6F7A00; --brand-fg: #16160E; --brand-wash: #EFF0CE;
+  --pos: #2E7D4F;  --neg: #B33A3A;       --focus: #8A9600;
+}
+
+/* Dark follows the device; no in-page toggle. Chalk above is the light default. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0E0E0A;   --surface: #17170F;   --surface-2: #212118;
+    --ink: #EDEDE0;  --ink-2: #9C9A86;     --ink-3: #86846F;
+    --rule: #29291C; --rule-2: #3A3A29;
+    --brand: #DCEC3A; --brand-ink: #DCEC3A; --brand-fg: #14140A; --brand-wash: #23260F;
+    --pos: #55B37E;  --neg: #E8635E;       --focus: #DCEC3A;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html {
+  font-family: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg);
+  color: var(--ink);
+  overflow-x: hidden;
+  /* Repaint the ground when the theme flips, so the switch reads as instant. */
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Figures ride the mono with tabular numbers so columns don't wobble. */
+.mono { font-family: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* Selection is a brand fill with dark text on it. */
+::selection { background: var(--brand); color: var(--brand-fg); }
+
+/* ---- Signature flourishes (lifted from the portfolio) -------------------- */
+
+/* Grain: a subtle fractal-noise texture over the whole page. */
+.grain::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+  opacity: 0.055;
+}
+@media (prefers-color-scheme: dark) {
+  .grain::before { mix-blend-mode: overlay; opacity: 0.22; }
+}
+
+/* The one signature move: a chunky chartreuse band swiped under a phrase. */
+.swipe {
+  background-image: linear-gradient(var(--brand), var(--brand));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 100% 0.24em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Halftone dot-grid, reused on card headers / dividers. */
+.dot-pattern {
+  background-image: radial-gradient(currentColor 1px, transparent 1.4px);
+  background-size: 7px 7px;
+}
+
+/* A brief, contained shake. The button teases what the engine does for real. */
+.shatter-fx:hover {
+  animation: shatter 0.28s cubic-bezier(.36,.07,.19,.97) 3;
+}
+@keyframes shatter {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  25%  { transform: translate(-1.5px, 1px) rotate(-0.4deg); }
+  50%  { transform: translate(1.5px, -1px) rotate(0.4deg); }
+  75%  { transform: translate(-1px, -1.5px) rotate(-0.3deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* ---- Page shell --------------------------------------------------------- */
+
+.page {
+  position: relative;
+  z-index: 2;                 /* over the grain */
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 40px 24px 96px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 56px;
+}
+
+/* Wordmark: chartreuse chip + the name, same shape language as the portfolio. */
+.wordmark { display: flex; align-items: center; gap: 10px; }
+.chip {
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  background: var(--brand);
+  color: var(--brand-fg);
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 15px;
+}
+.wordmark b { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
+.topbar .tag {
+  font-size: 12px;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.hero { margin-bottom: 40px; }
+.hero .eyebrow {
+  font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--brand-ink); margin: 0 0 14px;
+}
+.hero h1 {
+  margin: 0 0 16px;
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+}
+.hero p {
+  margin: 0;
+  max-width: 60ch;
+  color: var(--ink-2);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/* ---- Control deck ------------------------------------------------------- */
+
+.deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 24px;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+}
+.deck .label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em;
+  color: var(--ink-3); margin-right: 2px;
+}
+
+/* Segmented control for the three engines. */
+.segments { display: inline-flex; background: var(--surface-2); border: 1px solid var(--rule-2); border-radius: 10px; padding: 3px; }
+.segments button {
+  appearance: none; border: 0; cursor: pointer;
+  background: transparent; color: var(--ink-2);
+  font: inherit; font-size: 13px; font-weight: 600;
+  padding: 7px 14px; border-radius: 8px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.segments button[data-active="true"] { background: var(--bg); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+
+.spacer { flex: 1 1 auto; }
+
+/* Buttons: the destructive one is a full brand fill, rebuild is a quiet outline. */
+.btn {
+  appearance: none; cursor: pointer; font: inherit; font-weight: 700;
+  font-size: 14px; padding: 10px 18px; border-radius: 10px;
+  border: 1px solid transparent; display: inline-flex; align-items: center; gap: 8px;
+  transition: transform 0.06s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-demolish { background: var(--brand); color: var(--brand-fg); }
+.btn-demolish:not(:disabled):hover { filter: brightness(0.96); }
+.btn-rebuild { background: transparent; color: var(--ink); border-color: var(--rule-2); }
+.btn-rebuild:not(:disabled):hover { background: var(--surface-2); }
+
+/* ---- The victim: a mock dashboard that gets blown apart ----------------- */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.panel__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-3);
+}
+.panel__head .dot-pattern { width: 90px; height: 14px; opacity: 0.5; }
+.panel__title { display: flex; align-items: center; gap: 10px; color: var(--ink); }
+.panel__title b { font-weight: 700; letter-spacing: -0.01em; }
+.status {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--pos); display: inline-flex; align-items: center; gap: 6px;
+}
+.status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--pos); }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); }
+.stat { background: var(--surface); padding: 20px; }
+.stat .k { font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+.stat .v { font-size: 30px; font-weight: 500; margin-top: 8px; letter-spacing: -0.02em; }
+.stat .d { font-size: 12px; margin-top: 6px; }
+.stat .up { color: var(--pos); }
+.stat .down { color: var(--neg); }
+
+.rows { padding: 8px 20px 20px; }
+.row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 0; border-bottom: 1px solid var(--rule);
+}
+.row:last-child { border-bottom: 0; }
+.row .name { font-weight: 600; }
+.row .sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.pill {
+  font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+  background: var(--brand-wash); color: var(--brand-ink);
+}
+
+.footnote { margin-top: 28px; font-size: 13px; color: var(--ink-3); }
+.footnote code {
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
+  background: var(--surface-2); padding: 2px 6px; border-radius: 6px; color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .stats { grid-template-columns: 1fr; }
+  .deck { align-items: stretch; }
+}

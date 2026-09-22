@@ -125,7 +125,6 @@ export const createGridEngine = ({
     if (isDestroyed) return;
     renderFrameId = requestAnimationFrame(renderLoop);
 
-    const delta = time - lastTime;
     lastTime = time;
 
     // Step the physics simulation forward (assuming 60fps)

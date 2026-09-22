@@ -1,5 +1,8 @@
 // scripts/postinstall.js
-console.log("\n\n\x1b[31m[DEBUG] POSTINSTALL IS RUNNING\x1b[0m\n\n");
+// Skip the banner in CI / non-interactive installs so we don't spam build logs.
+if (process.env.CI || !process.stdout.isTTY) {
+  process.exit(0);
+}
 
 const shatterArt = `
      \\       /

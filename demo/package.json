@@ -1,0 +1,26 @@
+{
+  "name": "domolition-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Brand-kit test frontend for the DOMolition shatter engine.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "d3-delaunay": "^6.0.4",
+    "html-to-image": "^1.11.13",
+    "matter-js": "^0.20.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  }
+}

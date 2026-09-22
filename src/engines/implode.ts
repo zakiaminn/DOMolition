@@ -97,7 +97,6 @@ export const createImplodeEngine = ({
     if (isDestroyed) return;
     renderFrameId = requestAnimationFrame(renderLoop);
 
-    const delta = time - lastTime;
     lastTime = time;
     ticks++;
 

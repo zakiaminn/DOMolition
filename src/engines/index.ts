@@ -11,8 +11,7 @@ export const getEngine = (effect: DestructionEffect) => {
     case 'glass':
       return createGlassEngine;
     case 'implode':
-      return createImplodeEngine; 
-      return createGlassEngine; // Fallback for now
+      return createImplodeEngine;
     default:
       return createGlassEngine;
   }
