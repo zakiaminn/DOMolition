@@ -4,6 +4,10 @@
 
 DOMolition is a React-based physics engine wrapper that converts standard DOM elements into interactive, rigid-body physics simulations. It is designed to provide highly satisfying "rage quit" UI mechanisms by capturing the visual state of a component tree and destroying it dynamically on an HTML5 canvas.
 
+<p align="center">
+  <img src="./assets/glasseffectdemo.gif" alt="DOMolition shattering a dashboard UI into glass shards" width="640" />
+</p>
+
 ## Architecture
 
 The underlying system operates in three distinct phases:

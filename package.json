@@ -8,6 +8,7 @@
   "files": [
     "dist",
     "assets",
+    "!assets/*.mov",
     "scripts"
   ],
   "scripts": {

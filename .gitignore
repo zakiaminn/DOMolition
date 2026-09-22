@@ -11,6 +11,9 @@ tests/
 .DS_Store
 .thumbs.db
 
+# Raw demo screen recordings (kept locally as source for the .gif demos)
+assets/*.mov
+
 # npm/Node Debug Logs
 npm-debug.log*
 yarn-debug.log*
