@@ -263,6 +263,17 @@ body {
   background: var(--brand-wash); color: var(--brand-ink);
 }
 
+/* Shown only when the OS asks for reduced motion. */
+.motion-note {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  margin: -8px 0 0; padding: 12px 14px;
+  background: var(--brand-wash); border: 1px solid var(--rule-2); border-radius: 12px;
+}
+.motion-note p { margin: 0; flex: 1 1 260px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.motion-note b { color: var(--ink); }
+.motion-note__toggle { flex: 0 0 auto; padding: 8px 14px; font-size: 13px; }
+.motion-note__toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
 .footnote { margin-top: 28px; font-size: 13px; color: var(--ink-3); }
 .footnote code {
   font-family: "Spline Sans Mono", ui-monospace, monospace;

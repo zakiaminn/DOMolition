@@ -168,6 +168,7 @@ import { EFFECTS, type DestructionEffect } from 'domolition';
 | `rows` | `number` | `10` | The number of vertical subdivisions (down the height) for the `grid`, `implode` and `collapse` engines. |
 | `cols` | `number` | `8` | The number of horizontal subdivisions (across the width) for the `grid`, `implode` and `collapse` engines. |
 | `onShatterComplete` | `() => void` | `undefined` | Called once when the effect finishes: the rubble has settled (it stays on screen until `reset()`), or the element has fully melted, dissolved or imploded. An inline arrow is fine; it won't re-trigger the effect. |
+| `reducedMotion` | `'respect' \| 'ignore'` | `'respect'` | How to treat `prefers-reduced-motion`. See [Accessibility](#accessibility). |
 
 ### `RageQuitRef` (Imperative API)
 
@@ -188,6 +189,7 @@ Exported from `domolition/vanilla` (no React), from the main `domolition` entry,
 | `onComplete` | `() => void` | — | Called once when the effect finishes. |
 | `clearRubbleAfter` | `number` (ms) | — | Fade leftover rubble away this long after the effect finishes. By default it stays until `reset()`. |
 | `zIndex` | `number` | `2147483000` | z-index of the full-screen effect canvas. |
+| `reducedMotion` | `'respect' \| 'ignore'` | `'respect'` | How to treat `prefers-reduced-motion`. See [Accessibility](#accessibility). |
 
 Returns a `ShatterHandle`:
 
@@ -212,10 +214,20 @@ The element keeps its place in the layout while hidden, so nothing jumps. Call `
 
 ## Accessibility
 
-DOMolition respects the user's `prefers-reduced-motion` setting. When reduced motion is
-requested, triggering a shatter skips the animation, hides the target immediately, and
-calls `onShatterComplete` / `onComplete` (and resolves `finished`) right away. The effect canvas
-is `aria-hidden`.
+DOMolition respects the user's `prefers-reduced-motion` setting (on macOS: System Settings →
+Accessibility → Display → Reduce motion). When reduced motion is requested, triggering a shatter
+skips the animation and fades the target out over 200ms instead (opacity only, no movement), then
+calls `onShatterComplete` / `onComplete` and resolves `finished`. The effect canvas is `aria-hidden`.
+
+If the user explicitly asks to see the animation anyway, for example through a "play anyway"
+control like the one on the [live range](https://zakiaminn.github.io/DOMolition/), pass
+`reducedMotion="ignore"` (React) or `{ reducedMotion: 'ignore' }` (`shatter()`). Don't use it as a
+blanket default. To build that control, `prefersReducedMotion()` is exported:
+
+```js
+import { prefersReducedMotion } from 'domolition/vanilla';
+if (prefersReducedMotion()) showPlayAnywayButton();
+```
 
 ## License
 

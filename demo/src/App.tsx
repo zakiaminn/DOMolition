@@ -1,7 +1,21 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { RageQuitWrapper, RageQuitRef, EFFECTS, type DestructionEffect } from 'domolition';
 
 type Effect = DestructionEffect;
+
+// Tracks the OS "Reduce motion" setting live, so flipping it in System Settings
+// updates the page without a reload.
+const useReducedMotion = () => {
+  const query = '(prefers-reduced-motion: reduce)';
+  const [reduced, setReduced] = useState(() => typeof window !== 'undefined' && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = () => setReduced(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+  return reduced;
+};
 
 // A one-liner per engine so the deck explains itself without a manual.
 const BLURB: Record<Effect, string> = {
@@ -23,6 +37,12 @@ export const App = () => {
   // Three states, not two: 'intact' → 'demolishing' (physics running) → 'rubble'.
   // The middle one is what lets us grey the controls out mid-explosion.
   const [phase, setPhase] = useState<'intact' | 'demolishing' | 'rubble'>('intact');
+
+  // Visitors with Reduce Motion on get the library's real behaviour (a quick fade),
+  // plus an explicit opt-in to see the full effect. Without this, the range just
+  // looks broken to them.
+  const reducedMotion = useReducedMotion();
+  const [playAnyway, setPlayAnyway] = useState(false);
 
   const demolish = () => {
     setPhase('demolishing');
@@ -105,6 +125,31 @@ export const App = () => {
         </button>
       </div>
 
+      {reducedMotion && (
+        <div className="motion-note" role="status">
+          <p>
+            {playAnyway ? (
+              <>
+                <b>Playing the full effect.</b> Your Reduce Motion setting is on; switch
+                this off to see what those users get by default.
+              </>
+            ) : (
+              <>
+                <b>Reduce Motion is on</b> in your system settings, so DOMolition skips the
+                animation and just fades the panel out. That's the right call in a real app.
+              </>
+            )}
+          </p>
+          <button
+            className="btn btn-rebuild motion-note__toggle"
+            aria-pressed={playAnyway}
+            onClick={() => setPlayAnyway((v) => !v)}
+          >
+            {playAnyway ? 'Respect my setting' : 'Play anyway'}
+          </button>
+        </div>
+      )}
+
       <p className="footnote">
         Now firing: <code className="mono">effect="{effect}"</code> · {BLURB[effect]}
       </p>
@@ -120,6 +165,7 @@ export const App = () => {
           rows={14}
           cols={12}
           onShatterComplete={() => setPhase('rubble')}
+          reducedMotion={playAnyway ? 'ignore' : 'respect'}
         >
           <MockDashboard />
         </RageQuitWrapper>

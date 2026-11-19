@@ -12,6 +12,12 @@ export interface RageQuitWrapperProps {
   rows?: number;
   cols?: number;
   onShatterComplete?: () => void;
+  /**
+   * `'respect'` (default) skips the animation for users with reduced motion on and
+   * fades the UI out instead. `'ignore'` always plays it: only for an explicit
+   * "play anyway" choice by the user.
+   */
+  reducedMotion?: 'respect' | 'ignore';
 }
 
 // This lets parents call `ref.current.triggerShatter()` / `reset()` imperatively
@@ -21,7 +27,10 @@ export interface RageQuitRef {
 }
 
 export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
-  ({ children, effect = 'glass', isShattered = false, shardCount = 150, rows = 10, cols = 8, onShatterComplete }, ref) => {
+  (
+    { children, effect = 'glass', isShattered = false, shardCount = 150, rows = 10, cols = 8, onShatterComplete, reducedMotion = 'respect' },
+    ref
+  ) => {
     const contentRef = useRef<HTMLDivElement>(null); // The actual UI we are capturing
     const handleRef = useRef<ShatterHandle | null>(null);
     const [shattered, setShattered] = useState(isShattered);
@@ -30,8 +39,8 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
     // effect's dependency list means a parent re-render (say, an inline
     // onShatterComplete arrow, or flipping state when the rubble settles) can't
     // re-run the demolition on the already-hidden element.
-    const latest = useRef({ effect, shardCount, rows, cols, onShatterComplete });
-    latest.current = { effect, shardCount, rows, cols, onShatterComplete };
+    const latest = useRef({ effect, shardCount, rows, cols, onShatterComplete, reducedMotion });
+    latest.current = { effect, shardCount, rows, cols, onShatterComplete, reducedMotion };
 
     // Hook up the imperative handle so the parent component can drive the effect
     useImperativeHandle(ref, () => ({
@@ -52,12 +61,13 @@ export const RageQuitWrapper = forwardRef<RageQuitRef, RageQuitWrapperProps>(
     // (or unmounting) puts the UI back and removes the effect canvas.
     useEffect(() => {
       if (!shattered || !contentRef.current) return;
-      const { effect, shardCount, rows, cols } = latest.current;
+      const { effect, shardCount, rows, cols, reducedMotion } = latest.current;
       const handle = shatter(contentRef.current, {
         effect,
         shardCount,
         rows,
         cols,
+        reducedMotion,
         zIndex: 9999,
         onComplete: () => latest.current.onShatterComplete?.(),
       });

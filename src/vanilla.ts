@@ -22,7 +22,17 @@ export interface ShatterConfig {
   clearRubbleAfter?: number;
   /** z-index of the full-screen effect canvas. Default 2147483000 (above nearly everything). */
   zIndex?: number;
+  /**
+   * How to treat the user's `prefers-reduced-motion` setting.
+   * - `'respect'` (default): skip the animation and fade the element out quickly instead.
+   * - `'ignore'`: always play the full effect. Only use this when the user explicitly
+   *   asked to see the animation (e.g. a "play anyway" control), never as a blanket default.
+   */
+  reducedMotion?: 'respect' | 'ignore';
 }
+
+// How long the reduced-motion fade takes. Short, and opacity only: no movement.
+const REDUCED_MOTION_FADE_MS = 200;
 
 export interface ShatterHandle {
   /** Resolves when the effect finishes, or when `reset()` is called first. Rejects if capture fails. */
@@ -31,7 +41,8 @@ export interface ShatterHandle {
   reset: () => void;
 }
 
-const prefersReducedMotion = () =>
+/** True when the user has asked their OS/browser for reduced motion. */
+export const prefersReducedMotion = () =>
   typeof window !== 'undefined' &&
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -56,11 +67,13 @@ export const shatter = (element: HTMLElement, config: ShatterConfig = {}): Shatt
     onComplete,
     clearRubbleAfter,
     zIndex = 2147483000,
+    reducedMotion = 'respect',
   } = config;
 
   // Remember the inline styles we touch so reset() restores them exactly.
   const prevOpacity = element.style.opacity;
   const prevPointerEvents = element.style.pointerEvents;
+  const prevTransition = element.style.transition;
 
   let engine: ShatterEngineInstance | null = null;
   let canvas: HTMLCanvasElement | null = null;
@@ -103,16 +116,21 @@ export const shatter = (element: HTMLElement, config: ShatterConfig = {}): Shatt
     isReset = true;
     clearTimeout(fadeTimer);
     removeCanvas();
+    element.style.transition = prevTransition;
     element.style.opacity = prevOpacity;
     element.style.pointerEvents = prevPointerEvents;
     resolveFinished();
   };
 
-  // Accessibility: if the user opted out of motion, skip the animation entirely.
-  // We still hide the target and report completion so app state stays consistent.
-  if (prefersReducedMotion()) {
+  // Accessibility: if the user opted out of motion, skip the animation. A short
+  // opacity fade (no movement) makes it read as intentional rather than broken.
+  // We still report completion so app state stays consistent.
+  if (reducedMotion === 'respect' && prefersReducedMotion()) {
+    element.style.transition = `opacity ${REDUCED_MOTION_FADE_MS}ms ease`;
     hideElement();
-    queueMicrotask(finish);
+    fadeTimer = setTimeout(() => {
+      if (!isReset) finish();
+    }, REDUCED_MOTION_FADE_MS);
     return { finished, reset };
   }
 
@@ -172,6 +190,7 @@ export const shatter = (element: HTMLElement, config: ShatterConfig = {}): Shatt
     } catch (error) {
       // Leave the page as we found it.
       removeCanvas();
+      element.style.transition = prevTransition;
       element.style.opacity = prevOpacity;
       element.style.pointerEvents = prevPointerEvents;
       rejectFinished(error);
