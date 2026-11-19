@@ -7,6 +7,9 @@ import path from 'node:path';
 // same breath, no rebuild step wedged in between.
 export default defineConfig({
   plugins: [react()],
+  // Relative asset paths, so the built range works from any subpath
+  // (GitHub Pages serves it from /DOMolition/).
+  base: './',
   resolve: {
     // Point the package name at the TS source. `import { RageQuitWrapper } from
     // 'domolition'` here === importing ../src directly.

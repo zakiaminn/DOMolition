@@ -2,32 +2,51 @@
 
 > *"Because sometimes the only valid response to centering a div is blowing up the entire UI."*
 
-DOMolition is a React-based physics engine wrapper that converts standard DOM elements into interactive, rigid-body physics simulations. It is designed to provide highly satisfying "rage quit" UI mechanisms by capturing the visual state of a component tree and destroying it dynamically on an HTML5 canvas.
+Blow up any piece of UI. DOMolition snapshots a DOM element, hides the real one, and destroys the picture on a full-screen canvas: shattered glass, a controlled demolition, a katana slice, a melt, a Thanos-style disintegrate, and more. It ships as a React component **and** as one plain-JS function that works anywhere.
+
+**[▶ Try it live](https://zakiaminn.github.io/DOMolition/)**
 
 <p align="center">
-  <img src="./assets/glasseffectdemo.gif" alt="DOMolition shattering a dashboard UI into glass shards" width="640" />
+  <img src="https://raw.githubusercontent.com/zakiaminn/DOMolition/main/assets/glasseffectdemo.gif" alt="DOMolition shattering a dashboard UI into glass shards" width="640" />
 </p>
 
-## Architecture
-
-The underlying system operates in three distinct phases:
-
-1.  **Capture Phase**: Utilizes `html-to-image` (specifically `toCanvas`) to perform a high-fidelity capture of the target DOM node, resolving computed styles while supporting modern CSS features better than older rasterization libraries.
-2.  **Kinematic Phase**: Integrates `matter-js` to compute rigid body dynamics. Depending on the selected "engine" (e.g., Grid, Glass, Implode), the source bitmap is algorithmically subdivided—either into a discrete Cartesian grid or via Voronoi tessellations using `d3-delaunay`. Each subdivision becomes a physical body with calculated mass, restitution, and friction. Specific force vectors are applied based on the engine's explosive profile.
-3.  **Render Pipeline**: The original DOM element is visually hidden, and a full-viewport canvas is injected. A synchronized `requestAnimationFrame` loop paints the bitmap slices—using complex world-space clipping masks—according to the translation and rotation matrices calculated by the physics engine. The loop self-terminates when all rigid bodies reach a sleeping state.
+**Good for:** delete buttons that *feel* like deleting · 404 and error pages · dismissing notifications · easter eggs · portfolio and landing-page moments.
 
 ## Installation
 
-Install the package via npm:
 ```bash
 npm install domolition
 ```
 
-*Note: Ensure `react` and `react-dom` (v18.0.0 or higher) are installed in your project.*
+React (v18+) is only needed for the `RageQuitWrapper` component. The plain-JS `shatter()` function has no framework dependency.
 
 ## Usage
 
-The library exposes the primary `RageQuitWrapper` component. The physics simulation is typically controlled imperatively via a React Ref, allowing you to trigger the effect from external buttons.
+### Plain JS (Vue, Svelte, Astro, vanilla, anything)
+
+```js
+import { shatter } from 'domolition/vanilla';
+
+const card = document.querySelector('#card');
+const boom = shatter(card, { effect: 'disintegrate' });
+
+await boom.finished;  // resolves when the effect is done
+card.remove();        // ...or boom.reset() to bring it back
+```
+
+### No build step: a `<script>` tag
+
+```html
+<script src="https://unpkg.com/domolition@1/dist/domolition.global.js"></script>
+<script>
+  document.querySelector('#delete').onclick = () =>
+    DOMolition.shatter(document.querySelector('#card'), { effect: 'slice', clearRubbleAfter: 800 });
+</script>
+```
+
+### React
+
+The `RageQuitWrapper` component is controlled imperatively via a ref, so you can trigger the effect from any button. It ships with `"use client"`, so it drops straight into the Next.js App Router.
 ```tsx
 import React, { useRef, useState } from 'react';
 import { RageQuitWrapper, RageQuitRef } from 'domolition';
@@ -59,11 +78,11 @@ export const Application = () => {
 
 ## Physics Engines (Effects)
 
-DOMolition supports multiple destruction engines, selected via the `effect` prop.
+DOMolition ships seven destruction engines, selected with `effect` (a prop on the wrapper, an option for `shatter()`). Try them all on the [live range](https://zakiaminn.github.io/DOMolition/).
 
 ### 1. The Glass Engine (`effect="glass"`)
 Simulates brittle fracture. The UI cracks first (Pre-Fracture Phase), holding tension for 250ms, before shattering into jagged, realistic glass shards using Voronoi tessellation and a deterministic jitter-grid for performance.
-![glass engine demo](./assets/glasseffectdemo.gif)
+![glass engine demo](https://raw.githubusercontent.com/zakiaminn/DOMolition/main/assets/glasseffectdemo.gif)
 **Usage:**
 ```tsx
 {/* shardCount controls the number of jagged pieces */}
@@ -74,7 +93,7 @@ Simulates brittle fracture. The UI cracks first (Pre-Fracture Phase), holding te
 
 ### 2. The Implode Engine (`effect="implode"`)
 A high-energy inward collapse. The UI is broken into a grid, and forces pull all pieces toward the center of mass before they drop.
-![implode engine demo](./assets/implodeffectdemo.gif)
+![implode engine demo](https://raw.githubusercontent.com/zakiaminn/DOMolition/main/assets/implodeffectdemo.gif)
 **Usage:**
 ```tsx
 {/* rows and cols set the grid subdivisions that get pulled inward */}
@@ -85,12 +104,55 @@ A high-energy inward collapse. The UI is broken into a grid, and forces pull all
 
 ### 3. The Grid Engine (`effect="grid"`)
 The classic blocky explosion. The UI splits into a clean grid of rectangles that explode outward uniformly.
-![grid engine demo](./assets/grideffectdemo.gif)
+![grid engine demo](https://raw.githubusercontent.com/zakiaminn/DOMolition/main/assets/grideffectdemo.gif)
 **Usage:**
 ```tsx
 <RageQuitWrapper effect="grid" rows={12} cols={10}>
   <YourComponent/>
 </RageQuitWrapper>
+```
+
+### 4. The Collapse Engine (`effect="collapse"`)
+A controlled demolition. The UI shudders for a beat, then the charges go: it gives way from the bottom up, caving in toward the middle, and settles into a heap with a puff of dust where the rubble lands.
+**Usage:**
+```tsx
+{/* rows and cols set the size of the masonry blocks */}
+<RageQuitWrapper effect="collapse" rows={14} cols={12}>
+  <YourComponent/>
+</RageQuitWrapper>
+```
+
+### 5. The Slice Engine (`effect="slice"`)
+One katana stroke. A blade of light crosses the UI on a random diagonal, the two halves hang in the air for a beat and slide apart along the cut, then drop.
+**Usage:**
+```tsx
+<RageQuitWrapper effect="slice">
+  <YourComponent/>
+</RageQuitWrapper>
+```
+
+### 6. The Melt Engine (`effect="melt"`)
+Structural integrity: gone. The UI sags into wide drips that stretch and fade as they slide off the bottom of the screen. Pure canvas, no physics bodies.
+**Usage:**
+```tsx
+<RageQuitWrapper effect="melt">
+  <YourComponent/>
+</RageQuitWrapper>
+```
+
+### 7. The Disintegrate Engine (`effect="disintegrate"`)
+*"I don't feel so good."* The UI crumbles into dust in a ragged sweep from left to right, each grain carried up and away on a turbulent breeze. The particle count is capped, so it stays smooth on big elements too.
+**Usage:**
+```tsx
+<RageQuitWrapper effect="disintegrate">
+  <YourComponent/>
+</RageQuitWrapper>
+```
+
+Building an effect picker? Every effect name is exported:
+```tsx
+import { EFFECTS, type DestructionEffect } from 'domolition';
+// EFFECTS → ['grid', 'glass', 'implode', 'collapse', 'slice', 'melt', 'disintegrate']
 ```
 
 ## API Reference
@@ -100,12 +162,12 @@ The classic blocky explosion. The UI splits into a clean grid of rectangles that
 | Property | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `children` | `React.ReactNode` | required | The DOM sub-tree to be captured and simulated. |
-| `effect` | `'grid' \| 'glass' \| 'implode'` | `'glass'` | The physics engine to use for destruction. |
+| `effect` | `'grid' \| 'glass' \| 'implode' \| 'collapse' \| 'slice' \| 'melt' \| 'disintegrate'` | `'glass'` | The destruction engine to use. Read when the effect fires, so changing it mid-animation is safe. |
 | `isShattered` | `boolean` | `false` | A declarative fallback prop to trigger the shatter effect. |
 | `shardCount` | `number` | `150` | The number of shards generated by the `glass` engine. |
-| `rows` | `number` | `10` | The number of vertical subdivisions (down the height) for the `grid` and `implode` engines. |
-| `cols` | `number` | `8` | The number of horizontal subdivisions (across the width) for the `grid` and `implode` engines. |
-| `onShatterComplete` | `() => void` | `undefined` | Callback invoked when all rigid bodies stop moving. |
+| `rows` | `number` | `10` | The number of vertical subdivisions (down the height) for the `grid`, `implode` and `collapse` engines. |
+| `cols` | `number` | `8` | The number of horizontal subdivisions (across the width) for the `grid`, `implode` and `collapse` engines. |
+| `onShatterComplete` | `() => void` | `undefined` | Called once when the effect finishes: the rubble has settled (it stays on screen until `reset()`), or the element has fully melted, dissolved or imploded. An inline arrow is fine; it won't re-trigger the effect. |
 
 ### `RageQuitRef` (Imperative API)
 
@@ -113,6 +175,34 @@ The classic blocky explosion. The UI splits into a clean grid of rectangles that
 | :--- | :--- | :--- |
 | `triggerShatter` | `() => void` | Imperatively triggers the capture and subsequent physics simulation. |
 | `reset` | `() => void` | Restores the original UI and tears down the simulation, so the effect can be triggered again. |
+
+### `shatter(element, options?)` (plain JS)
+
+Exported from `domolition/vanilla` (no React), from the main `domolition` entry, and as `window.DOMolition.shatter` in the `<script>` build.
+
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `effect` | `DestructionEffect` | `'glass'` | Which engine to run. |
+| `shardCount` | `number` | `150` | Shards for `glass`. |
+| `rows` / `cols` | `number` | `10` / `8` | Grid size for `grid`, `implode` and `collapse`. |
+| `onComplete` | `() => void` | — | Called once when the effect finishes. |
+| `clearRubbleAfter` | `number` (ms) | — | Fade leftover rubble away this long after the effect finishes. By default it stays until `reset()`. |
+| `zIndex` | `number` | `2147483000` | z-index of the full-screen effect canvas. |
+
+Returns a `ShatterHandle`:
+
+| Member | Type | Description |
+| :--- | :--- | :--- |
+| `finished` | `Promise<void>` | Resolves when the effect finishes (or `reset()` is called first). Rejects if the capture fails. |
+| `reset` | `() => void` | Puts the element back exactly as it was and removes the canvas. Safe to call any time, more than once. |
+
+The element keeps its place in the layout while hidden, so nothing jumps. Call `element.remove()` yourself if it's gone for good.
+
+## How it works
+
+1.  **Capture**: `html-to-image` (`toCanvas`) takes a high-fidelity snapshot of the target node, resolving computed styles and modern CSS.
+2.  **Simulate**: the bitmap is cut up to suit the engine: a Cartesian grid, a Voronoi tessellation (`d3-delaunay`), a single polygon split, vertical strips, or a cloud of dust grains. The physical engines turn each piece into a `matter-js` rigid body with mass, restitution and friction; `melt` and `disintegrate` are pure canvas particle systems.
+3.  **Render**: the original element is hidden (layout kept) and a full-viewport canvas is placed over the page. A fixed-timestep `requestAnimationFrame` loop paints each piece with world-space clipping, then stops itself once everything settles, leaving the rubble on screen.
 
 ## Core Dependencies
 
@@ -123,8 +213,9 @@ The classic blocky explosion. The UI splits into a clean grid of rectangles that
 ## Accessibility
 
 DOMolition respects the user's `prefers-reduced-motion` setting. When reduced motion is
-requested, triggering a shatter skips the physics animation, hides the target immediately, and
-invokes `onShatterComplete` right away.
+requested, triggering a shatter skips the animation, hides the target immediately, and
+calls `onShatterComplete` / `onComplete` (and resolves `finished`) right away. The effect canvas
+is `aria-hidden`.
 
 ## License
 

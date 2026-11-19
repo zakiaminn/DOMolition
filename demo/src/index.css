@@ -125,12 +125,34 @@ body {
   font-size: 15px;
 }
 .wordmark b { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; }
-.topbar .tag {
+.topbar .links { display: flex; gap: 18px; }
+.topbar .links a {
   font-size: 12px;
   color: var(--ink-3);
   text-transform: uppercase;
   letter-spacing: 0.14em;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
+.topbar .links a:hover { color: var(--ink); }
+.topbar .links a:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+
+/* Install chip: the command, plus a one-click copy. */
+.install {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 22px; padding: 4px 4px 4px 14px;
+  background: var(--surface); border: 1px solid var(--rule-2); border-radius: 10px;
+}
+.install code { font-size: 14px; color: var(--ink); }
+.install code::before { content: '$ '; color: var(--ink-3); }
+.install__copy {
+  appearance: none; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700;
+  margin-left: 8px; padding: 6px 10px; border-radius: 7px; border: 0;
+  background: var(--surface-2); color: var(--ink-2);
+  min-width: 64px; transition: background 0.15s ease, color 0.15s ease;
+}
+.install__copy:hover { background: var(--brand); color: var(--brand-fg); }
+.install__copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
 .hero { margin-bottom: 40px; }
 .hero .eyebrow {
@@ -170,8 +192,8 @@ body {
   color: var(--ink-3); margin-right: 2px;
 }
 
-/* Segmented control for the three engines. */
-.segments { display: inline-flex; background: var(--surface-2); border: 1px solid var(--rule-2); border-radius: 10px; padding: 3px; }
+/* Segmented control for the engines. Wraps on narrow screens rather than overflowing. */
+.segments { display: inline-flex; flex-wrap: wrap; max-width: 100%; background: var(--surface-2); border: 1px solid var(--rule-2); border-radius: 10px; padding: 3px; }
 .segments button {
   appearance: none; border: 0; cursor: pointer;
   background: transparent; color: var(--ink-2);
@@ -247,7 +269,28 @@ body {
   background: var(--surface-2); padding: 2px 6px; border-radius: 6px; color: var(--ink-2);
 }
 
+/* ---- Usage: the two ways in -------------------------------------------- */
+
+.usage { margin-top: 72px; }
+.usage h2 { margin: 0 0 16px; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+.usage__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.snippet {
+  min-width: 0;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 14px;
+  overflow: hidden;
+}
+.snippet__label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-3);
+  padding: 12px 16px; border-bottom: 1px solid var(--rule);
+}
+.snippet pre {
+  margin: 0; padding: 16px; overflow-x: auto;
+  font-size: 13px; line-height: 1.6; color: var(--ink-2);
+}
+
 @media (max-width: 640px) {
+  .page { padding: 28px 16px 72px; }
   .stats { grid-template-columns: 1fr; }
   .deck { align-items: stretch; }
+  .usage__grid { grid-template-columns: 1fr; }
 }

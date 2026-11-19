@@ -1,20 +1,42 @@
 {
   "name": "domolition",
   "version": "1.2.0",
-  "description": "The Rage Quit UI Shatter Engine",
+  "description": "Blow up any DOM element: glass, collapse, slice, melt, disintegrate and more. React component or one plain-JS function.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./vanilla": {
+      "import": {
+        "types": "./dist/vanilla.d.mts",
+        "default": "./dist/vanilla.mjs"
+      },
+      "require": {
+        "types": "./dist/vanilla.d.ts",
+        "default": "./dist/vanilla.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "unpkg": "./dist/domolition.global.js",
+  "jsdelivr": "./dist/domolition.global.js",
+  "sideEffects": false,
   "files": [
-    "dist",
-    "assets",
-    "!assets/*.mov",
-    "scripts"
+    "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
-    "postinstall": "node ./scripts/postinstall.js"
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsup",
+    "dev": "tsup --watch"
   },
   "keywords": [
     "react",
@@ -24,21 +46,35 @@
     "animation",
     "rage-quit",
     "shatter",
+    "explode",
+    "disintegrate",
+    "thanos",
+    "delete-animation",
+    "easter-egg",
+    "vanilla-js",
     "html-to-image"
   ],
   "author": "Zaki Amin Ahmad",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zakiaminn/domolition.git"
+    "url": "https://github.com/zakiaminn/DOMolition.git"
   },
   "bugs": {
-    "url": "https://github.com/zakiaminn/domolition/issues"
+    "url": "https://github.com/zakiaminn/DOMolition/issues"
   },
-  "homepage": "https://github.com/zakiaminn/domolition#readme",
+  "homepage": "https://zakiaminn.github.io/DOMolition/",
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/d3-delaunay": "^6.0.4",

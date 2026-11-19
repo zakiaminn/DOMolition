@@ -1,17 +1,17 @@
 import React, { useRef, useState } from 'react';
-import { RageQuitWrapper, RageQuitRef } from 'domolition';
+import { RageQuitWrapper, RageQuitRef, EFFECTS, type DestructionEffect } from 'domolition';
 
-// The three engines the library ships, in the order they read best on a range.
-// `grid` is the honest blocky blast, `glass` cracks-then-shatters, `implode`
-// sucks the whole thing into a singularity.
-const EFFECTS = ['grid', 'glass', 'implode'] as const;
-type Effect = (typeof EFFECTS)[number];
+type Effect = DestructionEffect;
 
 // A one-liner per engine so the deck explains itself without a manual.
 const BLURB: Record<Effect, string> = {
   grid: 'Clean rectangles, blown outward. The classic.',
   glass: 'Voronoi fracture, cracks hold for a beat, then it goes.',
   implode: 'Zero-g collapse. Everything falls toward the middle and vanishes.',
+  collapse: 'Controlled demolition. A rumble, then it caves in on its own footprint.',
+  slice: 'One katana stroke. The halves hang for a beat, then slide apart and drop.',
+  melt: 'Structural integrity: gone. The whole thing drips off the screen.',
+  disintegrate: 'I don’t feel so good. Turns to dust and drifts away.',
 };
 
 export const App = () => {
@@ -44,7 +44,14 @@ export const App = () => {
           <span className="chip">D</span>
           <b>DOMolition</b>
         </div>
-        <span className="tag mono">Demolition&nbsp;Range</span>
+        <nav className="links mono">
+          <a href="https://www.npmjs.com/package/domolition" target="_blank" rel="noreferrer">
+            npm
+          </a>
+          <a href="https://github.com/zakiaminn/DOMolition" target="_blank" rel="noreferrer">
+            GitHub&nbsp;↗
+          </a>
+        </nav>
       </header>
 
       {/* --- Hero: the swipe underline is the house signature, so one word wears it --- */}
@@ -59,6 +66,7 @@ export const App = () => {
           snapshots it, chops it into physics bodies, and throws it across your
           screen. Rebuild puts it back like nothing happened.
         </p>
+        <InstallChip />
       </section>
 
       {/* --- Control deck: engine picker + the two big buttons --- */}
@@ -116,9 +124,66 @@ export const App = () => {
           <MockDashboard />
         </RageQuitWrapper>
       </div>
+
+      <UseAnywhere effect={effect} />
     </div>
   );
 };
+
+// One-click copy of the install command. The fastest path from "ha, cool" to a dependency.
+const InstallChip = () => {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText('npm i domolition');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* clipboard blocked: the text is right there to select */
+    }
+  };
+  return (
+    <div className="install">
+      <code className="mono">npm i domolition</code>
+      <button className="install__copy" onClick={copy} aria-label="Copy install command">
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+    </div>
+  );
+};
+
+// The two ways in: the React wrapper, or one plain function for everything else.
+// Snippets follow the engine picked above so they're copy-paste ready.
+const UseAnywhere = ({ effect }: { effect: Effect }) => (
+  <section className="usage">
+    <h2>Use it anywhere</h2>
+    <div className="usage__grid">
+      <div className="snippet">
+        <div className="snippet__label mono">React</div>
+        <pre className="mono">{`import { RageQuitWrapper } from 'domolition';
+
+const ref = useRef(null);
+
+<button onClick={() => ref.current.triggerShatter()}>
+  Delete
+</button>
+<RageQuitWrapper ref={ref} effect="${effect}">
+  <Card />
+</RageQuitWrapper>`}</pre>
+      </div>
+      <div className="snippet">
+        <div className="snippet__label mono">Vanilla JS · Vue · Svelte · anything</div>
+        <pre className="mono">{`import { shatter } from 'domolition/vanilla';
+
+const card = document.querySelector('#card');
+const boom = shatter(card, { effect: '${effect}' });
+
+await boom.finished;
+card.remove();   // or boom.reset() to undo`}</pre>
+      </div>
+    </div>
+  </section>
+);
 
 // A believable little dashboard. Figures on the mono, brand accents where the
 // data lives. Nothing here knows it's about to be tessellated.
